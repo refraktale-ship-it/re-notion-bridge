@@ -1,0 +1,141 @@
+openapi: 3.1.0
+info:
+  title: Re.Notion Bridge
+  version: "1.0.0"
+servers:
+  - url: https://re-notion-bridge.grzegorz-respondek.workers.dev
+components:
+  securitySchemes:
+    apiKeyAuth:
+      type: apiKey
+      in: header
+      name: x-api-key
+security:
+  - apiKeyAuth: []
+paths:
+  /notes:
+    get:
+      operationId: listNotes
+      description: >
+        Zwraca listę stron z wybranej bazy Notion. Można filtrować po tytule.
+      parameters:
+        - in: query
+          name: database_id
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: q
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: limit
+          required: false
+          schema:
+            type: integer
+            default: 20
+      responses:
+        "200":
+          description: Lista stron
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  pages:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        title:
+                          type: string
+                        url:
+                          type: string
+                        last_edited_time:
+                          type: string
+  /notes/{id}:
+    get:
+      operationId: getNote
+      description: Pobiera podstawowe informacje o stronie w Notion (tytuł, properties).
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Szczegóły strony
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  title:
+                    type: string
+                  url:
+                    type: string
+                  properties:
+                    type: object
+                  last_edited_time:
+                    type: string
+  /notes/{id}/content:
+    get:
+      operationId: getNoteContent
+      description: >
+        Zwraca uproszczoną treść strony w formie plain_text.
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Treść strony jako tekst
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  plain_text:
+                    type: string
+  /notes/{id}/append:
+    post:
+      operationId: appendToNote
+      description: >
+        Dopisuje na koniec strony nową sekcję: nagłówek + paragraf.
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                sectionTitle:
+                  type: string
+                content:
+                  type: string
+      responses:
+        "200":
+          description: Wynik operacji
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: boolean
