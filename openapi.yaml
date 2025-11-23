@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: Re.Notion Bridge
-  version: "1.0.0"
+  version: "2.0.0"
 servers:
   - url: https://re-notion-bridge.grzegorz-respondek.workers.dev
 components:
@@ -10,7 +10,6 @@ components:
       type: apiKey
       in: header
       name: x-api-key
-        schemas: {}
 security:
   - apiKeyAuth: []
 paths:
@@ -18,18 +17,24 @@ paths:
     get:
       operationId: listNotes
       description: >
-        Zwraca listę stron z wybranej bazy Notion. Można filtrować po tytule.
+        Zwraca listę stron z wybranego źródła danych (Data Source) w Notion.
+        Można filtrować po tytule.
       parameters:
         - in: query
-          name: database_id
+          name: data_source_url
           required: false
           schema:
             type: string
+            format: uri
+          description: >
+            Pełny URL źródła danych (Data Source URL), np.
+            https://www.notion.so/.../ds/abc123?...=...
         - in: query
           name: q
           required: false
           schema:
             type: string
+          description: Fraza do wyszukania w tytule ("Name").
         - in: query
           name: limit
           required: false
@@ -38,7 +43,7 @@ paths:
             default: 20
       responses:
         "200":
-          description: Lista stron
+          description: Lista stron (rekordów)
           content:
             application/json:
               schema:
