@@ -10,6 +10,7 @@ components:
       type: apiKey
       in: header
       name: x-api-key
+  schemas: {}
 security:
   - apiKeyAuth: []
 paths:
